@@ -1,0 +1,50 @@
+package airport;
+
+import airport.Airport;
+import aircraft.Aircraft;
+import passenger.Passenger;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Airport airport = new Airport("International Airport");
+        Aircraft aircraft1 = new Aircraft("Boeing 737", 5);
+        Aircraft aircraft2 = new Aircraft("Airbus A320", 5);
+        airport.addAircraft(aircraft1);
+        airport.addAircraft(aircraft2);
+        aircraft1.setAirport(airport);
+        aircraft2.setAirport(airport);
+
+        Passenger passenger1 = new Passenger("Alice", 1);
+        Passenger passenger2 = new Passenger("Bob", 2);
+        Passenger passenger3 = new Passenger("Charlie", 3);
+        Passenger passenger4 = new Passenger("David", 4);
+
+        aircraft1.addPassenger(passenger1);
+        aircraft2.addPassenger(passenger2);
+        aircraft2.addPassenger(passenger3);
+        aircraft2.addPassenger(passenger4);
+        System.out.println("Passengers of " + aircraft1.getName() + ":");
+        for (Passenger p : aircraft1.getPassengers()) {
+            System.out.println(p.getName() + " - Seat No: " + p.getFootprint());
+        }
+        System.out.println("Passengers of " + aircraft2.getName() + ":");
+        for (Passenger p : aircraft2.getPassengers()) {
+            System.out.println(p.getName() + " - Seat No: " + p.getFootprint());
+        }
+        System.out.print("\nEnter passenger name to search: ");
+        String searchName = scanner.nextLine();
+
+        Passenger foundByName = airport.searchPassengerByName(searchName);
+        if (foundByName != null) {
+            System.out.println("Passenger found: " + foundByName.getName() +
+                    " in aircraft " + foundByName.getAircraft().getName() +
+                    " at seat No: " + foundByName.getFootprint());
+        } else {
+            System.out.println("Passenger not found.");
+        }
+
+        scanner.close();
+    }
+}
