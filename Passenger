@@ -1,0 +1,30 @@
+package passenger;
+
+import aircraft.Aircraft;
+
+public class Passenger {
+    private String name;
+    private int footprint;
+    private Aircraft aircraft;
+
+    public Passenger(String name, int footprint) {
+        this.name = name;
+        this.footprint = footprint;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getFootprint() {
+        return footprint;
+    }
+
+    public Aircraft getAircraft() {
+        return aircraft;
+    }
+
+    public void setAircraft(Aircraft aircraft) {
+        this.aircraft = aircraft;
+    }
+}
