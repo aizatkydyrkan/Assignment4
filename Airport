@@ -1,7 +1,5 @@
 package airport;
 
-import aircraft.Aircraft;
-import passenger.Passenger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,26 +12,23 @@ public class Airport {
         this.aircraftVehicles = new ArrayList<>();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public List<Aircraft> getAircraftVehicles() {
-        return aircraftVehicles;
-    }
+    public String getName() { return name; }
+    public List<Aircraft> getAircraftVehicles() { return aircraftVehicles; }
 
     public void addAircraft(Aircraft aircraft) {
         aircraftVehicles.add(aircraft);
+        aircraft.setAirport(this);
     }
 
     public void removeAircraft(Aircraft aircraft) {
         aircraftVehicles.remove(aircraft);
+        aircraft.setAirport(null);
     }
 
-    public Passenger searchPassengerByName(String passengerName) {
+    public Passenger findPassengerByName(String name) {
         for (Aircraft aircraft : aircraftVehicles) {
             for (Passenger passenger : aircraft.getPassengers()) {
-                if (passenger.getName().equalsIgnoreCase(passengerName)) {
+                if (passenger.getName().equalsIgnoreCase(name)) {
                     return passenger;
                 }
             }
