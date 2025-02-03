@@ -1,14 +1,12 @@
-package aircraft;
+package airport;
 
-import airport.Airport;
-import passenger.Passenger;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Aircraft {
     private String name;
-    private Airport airport;
     private int maxPassengers;
+    private Airport airport;
     private List<Passenger> passengers;
 
     public Aircraft(String name, int maxPassengers) {
@@ -17,20 +15,13 @@ public class Aircraft {
         this.passengers = new ArrayList<>();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public Airport getAirport() {
-        return airport;
-    }
+    public String getName() { return name; }
+    public int getMaxPassengers() { return maxPassengers; }
+    public Airport getAirport() { return airport; }
+    public List<Passenger> getPassengers() { return passengers; }
 
     public void setAirport(Airport airport) {
         this.airport = airport;
-    }
-
-    public List<Passenger> getPassengers() {
-        return passengers;
     }
 
     public void addPassenger(Passenger passenger) {
@@ -38,7 +29,7 @@ public class Aircraft {
             passengers.add(passenger);
             passenger.setAircraft(this);
         } else {
-            System.out.println("Aircraft " + name + " is full.");
+            System.out.println("Cannot add passenger, aircraft is full!");
         }
     }
 
