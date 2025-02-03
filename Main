@@ -1,50 +1,42 @@
 package airport;
 
-import airport.Airport;
-import aircraft.Aircraft;
-import passenger.Passenger;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
         Airport airport = new Airport("International Airport");
-        Aircraft aircraft1 = new Aircraft("Boeing 737", 5);
-        Aircraft aircraft2 = new Aircraft("Airbus A320", 5);
+        Aircraft aircraft1 = new Aircraft("Boeing 737", 2);
+        Aircraft aircraft2 = new Aircraft("Airbus A320", 3);
+
         airport.addAircraft(aircraft1);
         airport.addAircraft(aircraft2);
-        aircraft1.setAirport(airport);
-        aircraft2.setAirport(airport);
 
-        Passenger passenger1 = new Passenger("Alice", 1);
-        Passenger passenger2 = new Passenger("Bob", 2);
-        Passenger passenger3 = new Passenger("Charlie", 3);
-        Passenger passenger4 = new Passenger("David", 4);
+        Passenger p1 = new Passenger("Alice", 1);
+        Passenger p2 = new Passenger("Bob", 2);
+        Passenger p3 = new Passenger("Charlie", 3);
+        Passenger p4 = new Passenger("David", 4);
 
-        aircraft1.addPassenger(passenger1);
-        aircraft2.addPassenger(passenger2);
-        aircraft2.addPassenger(passenger3);
-        aircraft2.addPassenger(passenger4);
-        System.out.println("Passengers of " + aircraft1.getName() + ":");
-        for (Passenger p : aircraft1.getPassengers()) {
-            System.out.println(p.getName() + " - Seat No: " + p.getFootprint());
-        }
-        System.out.println("Passengers of " + aircraft2.getName() + ":");
-        for (Passenger p : aircraft2.getPassengers()) {
-            System.out.println(p.getName() + " - Seat No: " + p.getFootprint());
-        }
-        System.out.print("\nEnter passenger name to search: ");
-        String searchName = scanner.nextLine();
+        aircraft1.addPassenger(p1);
+        aircraft2.addPassenger(p2);
+        aircraft2.addPassenger(p3);
+        aircraft2.addPassenger(p4);
 
-        Passenger foundByName = airport.searchPassengerByName(searchName);
-        if (foundByName != null) {
-            System.out.println("Passenger found: " + foundByName.getName() +
-                    " in aircraft " + foundByName.getAircraft().getName() +
-                    " at seat No: " + foundByName.getFootprint());
+        System.out.println("Passengers in " + aircraft1.getName() + ": " + aircraft1.getPassengers());
+        System.out.println("Passengers in " + aircraft2.getName() + ": " + aircraft2.getPassengers());
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter passenger name: ");
+        String passengerName = scanner.nextLine();
+        displayPassengerInfo(airport, passengerName);
+        scanner.close();
+    }
+
+    private static void displayPassengerInfo(Airport airport, String passengerName) {
+        Passenger foundPassenger = airport.findPassengerByName(passengerName);
+        if (foundPassenger != null) {
+            System.out.println("Found passenger: " + foundPassenger);
         } else {
             System.out.println("Passenger not found.");
         }
-
-        scanner.close();
     }
 }
