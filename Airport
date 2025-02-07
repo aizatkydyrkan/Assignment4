@@ -1,0 +1,298 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
+class Passenger {
+    private String name;
+    private int seatNumber;
+    private Aircraft aircraft;
+    public Passenger(String name, int seatNumber) {
+        this.name = name;
+        this.seatNumber = seatNumber;
+    }
+    public String getName() { return name; }
+    public int getSeatNumber() { return seatNumber; }
+    public Aircraft getAircraft() { return aircraft; }
+    public void setAircraft(Aircraft aircraft) {
+        this.aircraft = aircraft;
+    }
+    @Override
+    public String toString() {
+        return "Passenger{" + "name='" + name + "', seatNumber=" + seatNumber +
+                ", aircraft=" + (aircraft != null ? aircraft.getName() : "None") + "}";
+    }
+}
+class Aircraft {
+    private String name;
+    private int maxPassengers;
+    private Airport airport;
+    private List<Passenger> passengers;
+    public Aircraft(String name, int maxPassengers) {
+        this.name = name;
+        this.maxPassengers = maxPassengers;
+        this.passengers = new ArrayList<>();
+    }
+    public String getName() { return name; }
+    public int getMaxPassengers() { return maxPassengers; }
+    public Airport getAirport() { return airport; }
+    public List<Passenger> getPassengers() { return passengers; }
+    public void setAirport(Airport airport) {
+        this.airport = airport;
+    }
+    public void addPassenger(Passenger passenger) {
+        if (passengers.size() < maxPassengers) {
+            passengers.add(passenger);
+            passenger.setAircraft(this);
+        } else {
+            System.out.println("Cannot add passenger, aircraft is full!");
+        }
+    }
+    public void removePassenger(Passenger passenger) {
+        passengers.remove(passenger);
+        passenger.setAircraft(null);
+    }
+}
+class Airport {
+    private String name;
+    private List<Aircraft> aircraftVehicles;
+    public Airport(String name) {
+        this.name = name;
+        this.aircraftVehicles = new ArrayList<>();
+    }
+    public String getName() { return name; }
+    public List<Aircraft> getAircraftVehicles() { return aircraftVehicles; }
+    public void addAircraft(Aircraft aircraft) {
+        aircraftVehicles.add(aircraft);
+        aircraft.setAirport(this);
+    }
+    public void removeAircraft(Aircraft aircraft) {
+        aircraftVehicles.remove(aircraft);
+        aircraft.setAirport(null);
+    }
+    public Passenger findPassengerByName(String name) {
+        for (Aircraft aircraft : aircraftVehicles) {
+            for (Passenger passenger : aircraft.getPassengers()) {
+                if (passenger.getName().equalsIgnoreCase(name)) {
+                    return passenger;
+                }
+            }
+        }
+        return null;
+    }
+}
+public class Main {
+    private static List<Airport> airports = new ArrayList<>();
+    private static JTextArea outputArea;
+    private static JComboBox<String> airportComboBox;
+    private static JComboBox<String> aircraftComboBox;
+    public static void main(String[] args) {
+        Airport airport1 = new Airport("International Airport");
+        Aircraft aircraft1 = new Aircraft("Boeing 737", 2);
+        Aircraft aircraft2 = new Aircraft("Airbus A320", 3);
+        airport1.addAircraft(aircraft1);
+        airport1.addAircraft(aircraft2);
+        Passenger p1 = new Passenger("Alina", 1);
+        Passenger p2 = new Passenger("Batyr", 2);
+        Passenger p3 = new Passenger("Kuka", 3);
+        Passenger p4 = new Passenger("Daulet", 4);
+        aircraft1.addPassenger(p1);
+        aircraft2.addPassenger(p2);
+        aircraft2.addPassenger(p3);
+        aircraft2.addPassenger(p4);
+        airports.add(airport1);
+        SwingUtilities.invokeLater(Main::createAndShowGUI);
+    }
+    private static void createAndShowGUI() {
+        JFrame frame = new JFrame("Airport Management System");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(600, 400);
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        outputArea = new JTextArea();
+        outputArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(outputArea);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new FlowLayout());
+        JLabel airportLabel = new JLabel("Select an airport:");
+        airportComboBox = new JComboBox<>();
+        for (Airport airport : airports) {
+            airportComboBox.addItem(airport.getName());
+        }
+        airportComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedAirportName = (String) airportComboBox.getSelectedItem();
+                updateAircraftComboBox(selectedAirportName);
+            }
+        });
+        JButton addAirportButton = new JButton("Add Airport");
+        addAirportButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String newAirportName = JOptionPane.showInputDialog("Enter airport name:");
+                if (newAirportName != null && !newAirportName.trim().isEmpty()) {
+                    Airport newAirport = new Airport(newAirportName);
+                    airports.add(newAirport);
+                    airportComboBox.addItem(newAirportName);
+                    JOptionPane.showMessageDialog(null, "Airport added successfully!");
+                }
+            }
+        });
+        topPanel.add(airportLabel);
+        topPanel.add(airportComboBox);
+        topPanel.add(addAirportButton);
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new FlowLayout());
+        JLabel aircraftLabel = new JLabel("Select an aircraft:");
+        aircraftComboBox = new JComboBox<>();
+        aircraftComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedAircraftName = (String) aircraftComboBox.getSelectedItem();
+                displayPassengers(selectedAircraftName);
+            }
+        });
+        JButton addAircraftButton = new JButton("Add Aircraft");
+        addAircraftButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedAirportName = (String) airportComboBox.getSelectedItem();
+                if (selectedAirportName != null) {
+                    String newAircraftName = JOptionPane.showInputDialog("Enter aircraft name:");
+                    String maxPassengersStr = JOptionPane.showInputDialog("Enter max passengers:");
+                    if (newAircraftName != null && !newAircraftName.trim().isEmpty() &&
+                            maxPassengersStr != null && !maxPassengersStr.trim().isEmpty()) {
+                        try {
+                            int maxPassengers = Integer.parseInt(maxPassengersStr);
+                            Aircraft newAircraft = new Aircraft(newAircraftName, maxPassengers);
+                            for (Airport airport : airports) {
+                                if (airport.getName().equalsIgnoreCase(selectedAirportName)) {
+                                    airport.addAircraft(newAircraft);
+                                    updateAircraftComboBox(selectedAirportName);
+                                    JOptionPane.showMessageDialog(null, "Aircraft added successfully!");
+                                    return;
+                                }
+                            }
+                        } catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(null, "Invalid number format for max passengers.");
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select an airport first.");
+                }
+            }
+        });
+        JButton addPassengerButton = new JButton("Add Passenger");
+        addPassengerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedAircraftName = (String) aircraftComboBox.getSelectedItem();
+                if (selectedAircraftName != null) {
+                    String passengerName = JOptionPane.showInputDialog("Enter passenger name:");
+                    String seatNumberStr = JOptionPane.showInputDialog("Enter seat number:");
+                    if (passengerName != null && !passengerName.trim().isEmpty() &&
+                            seatNumberStr != null && !seatNumberStr.trim().isEmpty()) {
+                        try {
+                            int seatNumber = Integer.parseInt(seatNumberStr);
+                            Passenger newPassenger = new Passenger(passengerName, seatNumber);
+                            for (Airport airport : airports) {
+                                for (Aircraft aircraft : airport.getAircraftVehicles()) {
+                                    if (aircraft.getName().equalsIgnoreCase(selectedAircraftName)) {
+                                        aircraft.addPassenger(newPassenger);
+                                        displayPassengers(selectedAircraftName);
+                                        JOptionPane.showMessageDialog(null, "Passenger added successfully!");
+                                        return;
+                                    }
+                                }
+                            }
+                        } catch (NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(null, "Invalid number format for seat number.");
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select an aircraft first.");
+                }
+            }
+        });
+        JButton removePassengerButton = new JButton("Remove Passenger");
+        removePassengerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedAircraftName = (String) aircraftComboBox.getSelectedItem();
+                if (selectedAircraftName != null) {
+                    String passengerName = JOptionPane.showInputDialog("Enter passenger name:");
+                    if (passengerName != null && !passengerName.trim().isEmpty()) {
+                        for (Airport airport : airports) {
+                            for (Aircraft aircraft : airport.getAircraftVehicles()) {
+                                if (aircraft.getName().equalsIgnoreCase(selectedAircraftName)) {
+                                    Passenger passengerToRemove = null;
+                                    for (Passenger passenger : aircraft.getPassengers()) {
+                                        if (passenger.getName().equalsIgnoreCase(passengerName)) {
+                                            passengerToRemove = passenger;
+                                            break;
+                                        }
+                                    }
+                                    if (passengerToRemove != null) {
+                                        aircraft.removePassenger(passengerToRemove);
+                                        displayPassengers(selectedAircraftName);
+                                        JOptionPane.showMessageDialog(null, "Passenger removed successfully!");
+                                    } else {
+                                        JOptionPane.showMessageDialog(null, "Passenger not found.");
+                                    }
+                                    return;
+                                }
+                            }
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Please enter a passenger name.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please select an aircraft first.");
+                }
+            }
+        });
+        bottomPanel.add(aircraftLabel);
+        bottomPanel.add(aircraftComboBox);
+        bottomPanel.add(addAircraftButton);
+        bottomPanel.add(addPassengerButton);
+        bottomPanel.add(removePassengerButton);
+        panel.add(topPanel, BorderLayout.NORTH);
+        panel.add(bottomPanel, BorderLayout.SOUTH);
+        frame.getContentPane().add(panel);
+        frame.setVisible(true);
+        if (airportComboBox.getItemCount() > 0) {
+            updateAircraftComboBox((String) airportComboBox.getSelectedItem());
+        }
+    }
+    private static void updateAircraftComboBox(String airportName) {
+        aircraftComboBox.removeAllItems();
+        for (Airport airport : airports) {
+            if (airport.getName().equalsIgnoreCase(airportName)) {
+                for (Aircraft aircraft : airport.getAircraftVehicles()) {
+                    aircraftComboBox.addItem(aircraft.getName());
+                }
+                return;
+            }
+        }
+    }
+    private static void displayPassengers(String aircraftName) {
+        outputArea.setText("");
+        for (Airport airport : airports) {
+            for (Aircraft aircraft : airport.getAircraftVehicles()) {
+                if (aircraft.getName().equalsIgnoreCase(aircraftName)) {
+                    outputArea.append("Passengers in " + aircraft.getName() + ":\n");
+                    for (Passenger passenger : aircraft.getPassengers()) {
+                        outputArea.append(passenger + "\n");
+                    }
+                    return;
+                }
+            }
+        }
+        outputArea.append("No passengers found for the selected aircraft.\n");
+    }
+}
+`
