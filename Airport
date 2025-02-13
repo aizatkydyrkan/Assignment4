@@ -72,16 +72,6 @@ class Airport {
         aircraftVehicles.remove(aircraft);
         aircraft.setAirport(null);
     }
-    public Passenger findPassengerByName(String name) {
-        for (Aircraft aircraft : aircraftVehicles) {
-            for (Passenger passenger : aircraft.getPassengers()) {
-                if (passenger.getName().equalsIgnoreCase(name)) {
-                    return passenger;
-                }
-            }
-        }
-        return null;
-    }
 }
 public class Main {
     private static List<Airport> airports = new ArrayList<>();
@@ -89,20 +79,6 @@ public class Main {
     private static JComboBox<String> airportComboBox;
     private static JComboBox<String> aircraftComboBox;
     public static void main(String[] args) {
-        Airport airport1 = new Airport("International Airport");
-        Aircraft aircraft1 = new Aircraft("Boeing 737", 2);
-        Aircraft aircraft2 = new Aircraft("Airbus A320", 3);
-        airport1.addAircraft(aircraft1);
-        airport1.addAircraft(aircraft2);
-        Passenger p1 = new Passenger("Alina", 1);
-        Passenger p2 = new Passenger("Batyr", 2);
-        Passenger p3 = new Passenger("Kuka", 3);
-        Passenger p4 = new Passenger("Daulet", 4);
-        aircraft1.addPassenger(p1);
-        aircraft2.addPassenger(p2);
-        aircraft2.addPassenger(p3);
-        aircraft2.addPassenger(p4);
-        airports.add(airport1);
         SwingUtilities.invokeLater(Main::createAndShowGUI);
     }
     private static void createAndShowGUI() {
